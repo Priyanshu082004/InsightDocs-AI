@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Secure document vault powered by AI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Priyanshu082004/InsightDocs-AI.git"
+  },
+  "keywords": [
+    "Secure"
+  ],
+  "author": "Priyanshu Sharma",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Priyanshu082004/InsightDocs-AI/issues"
+  },
+  "homepage": "https://github.com/Priyanshu082004/InsightDocs-AI#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
