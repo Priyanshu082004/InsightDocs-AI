@@ -6,10 +6,10 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
   hashToken,
-} from "../../utils/token.util.js";
+} from "../../utils/tokenGenerator.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { HTTP_STATUS } from "../../constants/httpStatus.constant.js";
-import { AUDIT_ACTION } from "../../constants/auditAction.constant.js";
+import { AUDIT_ACTION } from "../../constants/system.constant.js";
 
 const SALT_ROUNDS = 10;
 

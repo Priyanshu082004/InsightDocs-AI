@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { env } from "./env.config.js";
+import { env , isDevelopment} from "./env.config.js";
 import { logger } from "./logger.config.js";
 
 let isConnected = false;
@@ -17,10 +17,17 @@ export const connectDB = async () => {
     });
 
     isConnected = true;
-    logger.info(
-      { host: connection.connection.host, db: connection.connection.name },
-      "MongoDB connected"
-    );
+    if (isDevelopment) {
+  logger.info(
+    {
+      host: connection.connection.host,
+      db: connection.connection.name,
+    },
+    "MongoDB connected"
+  );
+  } else {
+  logger.info("MongoDB connected");
+  }
 
     mongoose.connection.on("error", (err) => {
       logger.error({ err }, "MongoDB connection error");

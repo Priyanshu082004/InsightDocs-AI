@@ -1,5 +1,5 @@
 import { ApiError } from "../utils/ApiError.js";
-import { HTTP_STATUS } from "../constants/httpStatus.constants.js";
+import { HTTP_STATUS } from "../constants/httpStatus.constant.js";
 
 
 //  Generic validator: pass any Zod schema, get back Express middleware.

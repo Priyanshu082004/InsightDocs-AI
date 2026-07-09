@@ -24,3 +24,33 @@ export const updateRefreshTokenHash = async (userId, refreshTokenHash) => {
 export const clearRefreshTokenHash = async (userId) => {
   return User.findByIdAndUpdate(userId, { refreshTokenHash: null }, { new: true });
 };
+
+
+export const updateProfile = async (userId, updates) => {
+  return User.findByIdAndUpdate(userId, updates, { new: true, runValidators: true });
+};
+ 
+export const updatePasswordHash = async (userId, passwordHash) => {
+  return User.findByIdAndUpdate(userId, { passwordHash }, { new: true });
+};
+ 
+export const updateRole = async (userId, role) => {
+  return User.findByIdAndUpdate(userId, { role }, { new: true });
+};
+ 
+export const setActiveStatus = async (userId, isActive) => {
+  return User.findByIdAndUpdate(userId, { isActive }, { new: true });
+};
+ 
+export const findByIdWithPassword = async (id) => {
+  return User.findById(id).select("+passwordHash");
+};
+ 
+export const listUsers = async ({ page = 1, limit = 20 } = {}) => {
+  const skip = (page - 1) * limit;
+  const [items, total] = await Promise.all([
+    User.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+    User.countDocuments(),
+  ]);
+  return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
+};

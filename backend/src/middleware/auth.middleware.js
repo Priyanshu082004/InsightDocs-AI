@@ -1,7 +1,7 @@
 
-import { verifyAccessToken } from "../utils/token.util.js";
+import { verifyAccessToken } from "../utils/tokenGenerator.js";
 import { ApiError } from "../utils/ApiError.js";
-import { HTTP_STATUS } from "../constants/httpStatus.constants.js";
+import { HTTP_STATUS } from "../constants/httpStatus.constant.js";
 
 
 //   Attaches req.user = { id, role } from the JWT payload directly —
