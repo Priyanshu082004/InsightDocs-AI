@@ -12,7 +12,7 @@ const REFRESH_COOKIE_NAME = "refreshToken";
 const refreshCookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: "strict",   // can be changed if frontend is on a different domain, but must be set to "strict" for same-site
+  sameSite: "strict",
   maxAge: 7 * 24 * 60 * 60 * 1000, // matches JWT_REFRESH_EXPIRY default (7d)
   path: "/api/v1/auth",
 };
