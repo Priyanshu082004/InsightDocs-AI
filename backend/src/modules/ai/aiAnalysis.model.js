@@ -33,7 +33,7 @@ const aiAnalysisSchema = new Schema(
     },
     modelVersion: {
       type: String,
-      required: true, // which Gemini model produced this analysis
+      required: true, // which  model produced this analysis
     },
   },
   { timestamps: true }

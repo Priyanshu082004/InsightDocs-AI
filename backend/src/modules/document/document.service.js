@@ -4,6 +4,7 @@ import * as permissionService from "../permission/permission.service.js";
 import * as storageService from "../../storage/storage.service.js";
 import * as userRepository from "../user/user.repository.js";
 import * as auditService from "../audit/audit.service.js";
+import { enqueueDocumentProcessing } from "../../jobs/producers/documentProcessing.producer.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { HTTP_STATUS } from "../../constants/httpStatus.constant.js";
 import { DOCUMENT_STATUS } from "../../constants/documentStatus.constant.js";
@@ -68,6 +69,7 @@ export const uploadDocument = async (ownerId, file) => {
     resourceId: document._id,
     metadata: { originalName: file.originalname, sizeBytes: file.size },
   });
+    await enqueueDocumentProcessing(document._id);
 
   return sanitizeDocument(document);
 };

@@ -12,15 +12,19 @@ export const updateDisplayName = async (documentId, displayName) => {
   return Document.findByIdAndUpdate(documentId, { displayName }, { new: true });
 };
 
+export const updateStatus = async (documentId, status) => {
+  return Document.findByIdAndUpdate(documentId, { status }, { new: true });
+};
+
 export const softDelete = async (documentId) => {
   return Document.findByIdAndUpdate(documentId, { isDeleted: true }, { new: true });
 };
 
 
-//  documentIds comes from permission.repository.listDocumentIdsForUser —
+//   documentIds comes from permission.repository.listDocumentIdsForUser —
 //  this function only ever operates on that pre-filtered set, never on
 //   the full Document collection, so a search/list request can't
-//  accidentally surface a document the caller has no Permission row for.
+//   accidentally surface a document the caller has no Permission row for.
  
 export const findManyByIds = async (documentIds, { search, tags, page, limit }) => {
   const filter = {
