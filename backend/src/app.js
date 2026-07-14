@@ -3,8 +3,10 @@ import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
+import {RedisStore} from "rate-limit-redis";
 
 import { env } from "./config/env.config.js";
+import { redisClient } from "./config/redis.config.js";
 import { requestLogger } from "./middleware/requestLogger.middleware.js";
 import { notFound } from "./middleware/notFound.middleware.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";

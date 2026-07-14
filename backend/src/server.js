@@ -2,9 +2,12 @@ import app from "./app.js";
 import { env } from "./config/env.config.js";
 import { connectDB, disconnectDB } from "./config/db.config.js";
 import { logger } from "./config/logger.config.js";
+import { disconnectRedis } from "./config/redis.config.js";
+import { ensureBucketExists } from "./storage/minio.client.js";
 
 const start = async () => {
   await connectDB();
+  await ensureBucketExists();
 
   const server = app.listen(env.PORT, () => {
     logger.info(`Server running on port ${env.PORT} [${env.NODE_ENV}]`);
