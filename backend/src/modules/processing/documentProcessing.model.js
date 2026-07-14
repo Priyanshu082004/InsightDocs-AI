@@ -43,8 +43,14 @@ const documentProcessingSchema = new Schema(
       type: Date,
       default: null,
     },
+    output: {
+      type: Schema.Types.Mixed,
+      default: null,
+    },
+
   },
   { timestamps: true }
+    
 );
 
 // One row per (document, stage) — lets a BullMQ worker resuming after a

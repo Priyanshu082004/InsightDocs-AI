@@ -1,5 +1,5 @@
 import { DocumentProcessing } from "./documentProcessing.model.js";
-import { PROCESSING_STATUS } from "../../constants/processingStage.constant.js";
+import { PROCESSING_STATUS } from "../../constants/document.constant.js";
 
 export const getOrCreateStage = async (documentId, stage) => {
   return DocumentProcessing.findOneAndUpdate(

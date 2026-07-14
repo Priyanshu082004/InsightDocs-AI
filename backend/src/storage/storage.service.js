@@ -68,3 +68,18 @@ export const objectExists = async (key) => {
     return false;
   }
 };
+
+
+export const getObjectBuffer = async (key) => {
+  try {
+    const stream = await minioClient.getObject(env.MINIO_BUCKET, key);
+    const chunks = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
+  } catch (err) {
+    logger.error({ err, key }, "Failed to read object from storage");
+    throw new ApiError(HTTP_STATUS.NOT_FOUND, "File not found in storage");
+  }
+};

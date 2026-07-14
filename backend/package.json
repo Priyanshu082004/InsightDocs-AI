@@ -33,6 +33,7 @@
     "jsonwebtoken": "^9.0.3",
     "minio": "^8.0.7",
     "mongoose": "^9.7.4",
+    "openai": "^6.46.0",
     "pino": "^10.3.1",
     "rate-limit-redis": "^5.0.0",
     "zod": "^4.4.3"
