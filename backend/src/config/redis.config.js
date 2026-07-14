@@ -23,3 +23,9 @@ export const createBullMQConnection = () => {
 export const disconnectRedis = async () => {
   await redisClient.quit();
 };
+
+export const createRedisAdapterClients = () => {
+  const pubClient = redisClient.duplicate();
+  const subClient = redisClient.duplicate();
+  return { pubClient, subClient };
+};

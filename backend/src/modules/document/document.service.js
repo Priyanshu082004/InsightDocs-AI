@@ -5,11 +5,13 @@ import * as storageService from "../../storage/storage.service.js";
 import * as userRepository from "../user/user.repository.js";
 import * as auditService from "../audit/audit.service.js";
 import { enqueueDocumentProcessing } from "../../jobs/producers/documentProcessing.producer.js";
+import { emitDocumentShared } from "../../sockets/emitters/documentShared.emitter.js";
+import { emitActivity } from "../../sockets/emitters/activity.emitter.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { HTTP_STATUS } from "../../constants/httpStatus.constant.js";
 import { DOCUMENT_STATUS } from "../../constants/documentStatus.constant.js";
 import { ACCESS_LEVELS } from "../../constants/auth.constant.js";
-import { AUDIT_ACTION } from "../../constants/system.constant.js";
+import { AUDIT_ACTION } from "../../constants/auth.constant.js";
 
 const sanitizeDocument = (doc) => ({
   id: doc._id,
@@ -23,9 +25,7 @@ const sanitizeDocument = (doc) => ({
   tags: doc.tags,
   createdAt: doc.createdAt,
   updatedAt: doc.updatedAt,
-  // storageKey is intentionally never included — it's an internal
-  // MinIO addressing detail, not something the client needs or should
-  // be able to see. Downloads happen exclusively via presigned URL.
+ 
 });
 
 export const uploadDocument = async (ownerId, file) => {
@@ -42,9 +42,7 @@ export const uploadDocument = async (ownerId, file) => {
     size: file.size,
   });
 
-  // Status starts at PROCESSING even though no worker is consuming it
-  // yet —  BullMQ producer will enqueue the actual AI pipeline
-  // job right after this create() call. 
+  
   const document = await documentRepository.createDocument({
     ownerId,
     originalName: file.originalname,
@@ -69,7 +67,15 @@ export const uploadDocument = async (ownerId, file) => {
     resourceId: document._id,
     metadata: { originalName: file.originalname, sizeBytes: file.size },
   });
-    await enqueueDocumentProcessing(document._id);
+
+
+  await enqueueDocumentProcessing(document._id);
+
+  emitActivity(ownerId, {
+    type: "DOCUMENT_UPLOADED",
+    message: `${file.originalname} was uploaded and is processing`,
+    metadata: { documentId: document._id },
+  });
 
   return sanitizeDocument(document);
 };
@@ -114,12 +120,7 @@ export const renameDocument = async (userId, documentId, displayName) => {
 };
 
 export const deleteDocument = async (userId, documentId) => {
-  // Soft delete only — the Mongo row is flagged isDeleted and disappears
-  // from every query in document.repository, but the MinIO object is
-  // left in place. Permanent deletion (of both the row and the MinIO
-  // object) is deferred to a scheduled cleanup job in a later phase,
-  // rather than an irreversible action tied directly to this endpoint —
-  // that gives you a recovery window if a delete was a mistake.
+  
   const document = await documentRepository.softDelete(documentId);
   if (!document) {
     throw new ApiError(HTTP_STATUS.NOT_FOUND, "Document not found");
@@ -162,6 +163,15 @@ export const shareDocument = async (granterId, documentId, { email, accessLevel 
     granterId,
     targetUserId: targetUser._id,
     accessLevel,
+  });
+
+  const document = await documentRepository.findById(documentId);
+
+  emitDocumentShared(targetUser._id, {
+    documentId,
+    documentName: document?.displayName,
+    accessLevel,
+    sharedBy: granterId,
   });
 
   return { message: `Document shared with ${email} as ${accessLevel}` };

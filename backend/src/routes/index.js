@@ -10,5 +10,6 @@ const router = Router();
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/documents", documentRoutes);
+router.use("/chat", chatRoutes);
 
 export default router;
