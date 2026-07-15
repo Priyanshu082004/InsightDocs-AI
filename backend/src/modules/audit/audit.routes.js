@@ -3,16 +3,16 @@ import * as auditController from "./audit.controller.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
 import { authorize } from "../../middlewares/rbac.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
-import { requireAuditResourceAccess } from "../../middlewares/auditResourceAccess.middleware.js";
-import { asyncHandler } from "../../utils/AsyncHandler.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ROLES } from "../../constants/auth.constant.js";
 import { listAuditLogsQuerySchema } from "./audit.validation.js";
 
 const router = Router();
 
-// Unchanged: browsing the full audit log across all resources stays
-// admin-only. Only the single-resource history endpoint below gained
-// an owner exception.
+// Admin-only for both routes — audit trails are a compliance/security
+// surface, not user-facing data. Even a document owner can't browse
+// their own document's audit history through this endpoint; that's a
+// deliberate scope boundary, not an oversight.
 router.get(
   "/",
   authenticate,
@@ -21,15 +21,10 @@ router.get(
   asyncHandler(auditController.list)
 );
 
-// authorize(ROLES.ADMIN) replaced with requireAuditResourceAccess —
-// admins still pass (checked first, inside the middleware), but a
-// document's owner can now also reach their own document's audit
-// history. Editors, viewers, and non-owners get the same 404 pattern
-// used everywhere else in the app for insufficient document access.
 router.get(
   "/resource/:resourceType/:resourceId",
   authenticate,
-  requireAuditResourceAccess,
+  authorize(ROLES.ADMIN),
   asyncHandler(auditController.resourceHistory)
 );
 
