@@ -4,6 +4,8 @@ import * as permissionService from "../permission/permission.service.js";
 import * as storageService from "../../storage/storage.service.js";
 import * as userRepository from "../user/user.repository.js";
 import * as auditService from "../audit/audit.service.js";
+import * as notificationService from "../notification/notification.service.js"
+import { NOTIFICATION_TYPE } from "../../constants/system.constant.js";
 import { enqueueDocumentProcessing } from "../../jobs/producers/documentProcessing.producer.js";
 import { emitDocumentShared } from "../../sockets/emitters/documentShared.emitter.js";
 import { emitActivity } from "../../sockets/emitters/activity.emitter.js";
@@ -173,7 +175,16 @@ export const shareDocument = async (granterId, documentId, { email, accessLevel 
     accessLevel,
     sharedBy: granterId,
   });
+    
 
+   await notificationService.createAndPushNotification({
+    userId: targetUser._id,
+    type: NOTIFICATION_TYPE.DOCUMENT_SHARED,
+    message: `${granter?.name ?? "Someone"} shared "${document?.displayName}" with you (${accessLevel.toLowerCase()} access)`,
+    relatedDocumentId: documentId,
+  });
+
+  
   return { message: `Document shared with ${email} as ${accessLevel}` };
 };
 
