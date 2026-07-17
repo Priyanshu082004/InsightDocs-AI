@@ -7,9 +7,9 @@ import {RedisStore} from "rate-limit-redis";
 
 import { env } from "./config/env.config.js";
 import { redisClient } from "./config/redis.config.js";
-import { requestLogger } from "./middleware/requestLogger.middleware.js";
-import { notFound } from "./middleware/notFound.middleware.js";
-import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import { requestLogger } from "./middlewares/requestLogger.middleware.js";
+import { notFound } from "./middlewares/notFound.middleware.js";
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 import routes from "./routes/index.js";
 
 const app = express();

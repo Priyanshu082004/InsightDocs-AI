@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --env-file=.env src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "worker": "node --env-file=.env src/worker.js",
+    "worker:dev": "nodemon --env-file=.env src/worker.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
     "@socket.io/redis-adapter": "^8.3.0",
     "@socket.io/redis-emitter": "^5.1.0",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.80.7",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -35,6 +38,7 @@
     "jsonwebtoken": "^9.0.3",
     "minio": "^8.0.7",
     "mongoose": "^9.7.4",
+    "multer": "^2.2.0",
     "openai": "^6.46.0",
     "pino": "^10.3.1",
     "rate-limit-redis": "^5.0.0",

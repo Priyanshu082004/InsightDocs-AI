@@ -4,8 +4,8 @@ import { env } from "../../config/env.config.js";
 import * as storageService from "../../storage/storage.service.js";
 import * as documentProcessingRepository from "../../modules/processing/documentProcessing.repository.js";
 import * as documentChunkRepository from "../../modules/ai/documentChunk.repository.js";
-import * as embeddingMetadataRepository from "../../modules/ai/embeddingMetadata.repository.js";
-import * as llmService from "../../modules/ai/llm.service.js";
+import * as embeddingMetadataRepository from "../../modules/processing/embeddingMetadata.repository.js";
+import * as llmService from "../../modules/ai/Llm.service.js";
 import * as embeddingService from "../../modules/ai/embedding.service.js";
 import * as aiAnalysisService from "../../modules/ai/aiAnalysis.service.js";
 import { extractText } from "../../modules/ai/textExtraction.service.js";
@@ -97,7 +97,7 @@ export const stageHandlers = {
       await embeddingMetadataRepository.upsertEmbeddingMetadata({
         chunkId: chunk._id,
         documentId: document._id,
-        modelName: env.OPENAI_EMBEDDING_MODEL,
+        modelName: env.EMBEDDING_MODEL,
         dimensions: vector.length,
         tokensUsed: chunk.tokenCount,
       });

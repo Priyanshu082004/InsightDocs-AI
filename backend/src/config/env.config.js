@@ -29,10 +29,24 @@ const envSchema = z.object({
   MINIO_ACCESS_KEY: z.string().min(1).optional(),
   MINIO_SECRET_KEY: z.string().min(1).optional(),
   MINIO_BUCKET: z.string().default("document-vault"),
-  MINIO_USE_SSL: z.coerce.boolean().default(false),
+  // z.coerce.boolean() would turn the string "false" into true (any
+  // non-empty string is truthy) — parse the string explicitly instead.
+  MINIO_USE_SSL: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
 
-  // Gemini 
-  GEMINI_API_KEY: z.string().min(1).optional(),
+  // Embeddings (names match .env — provider-agnostic)
+  EMBEDDING_PROVIDER: z.string().default("bge"),
+  EMBEDDING_MODEL: z.string().default("BAAI/bge-m3"),
+  EMBEDDING_DIMENSIONS: z.coerce.number().int().positive().default(1024),
+
+  // OpenRouter — LLM provider for all text generation
+  OPENROUTER_API_KEY: z.string().min(1).optional(),
+  OPENROUTER_MODEL: z.string().default("openrouter/free"),
+
+  // Audit
+  AUDIT_RETENTION_DAYS: z.coerce.number().int().positive().default(90),
 
   // Rate limiting
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),

@@ -2,6 +2,7 @@ import { Router } from "express";
 import authRoutes from "../modules/auth/auth.routes.js";
 import userRoutes from "../modules/user/user.routes.js";
 import documentRoutes from "../modules/document/document.routes.js";
+import chatRoutes from "../modules/chat/chat.routes.js";
 import notificationRoutes from "../modules/notification/notification.routes.js";
 import auditRoutes from "../modules/audit/audit.routes.js"
 

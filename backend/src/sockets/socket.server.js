@@ -2,10 +2,10 @@ import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { env } from "../config/env.config.js";
 import { createRedisAdapterClients } from "../config/redis.config.js";
-import { verifyAccessToken } from "../utils/token.util.js";
+import { verifyAccessToken } from "../utils/tokenGenerator.js";
 import { logger } from "../config/logger.config.js";
 import { registerPresenceHandlers } from "./handlers/presence.handler.js";
-import { registerDocumentHandlers } from "./handlers/document.handler.js";
+import { registerDocumentHandlers } from "./handlers/documentHandler.js";
 
 export const initSocketServer = (httpServer) => {
   const io = new Server(httpServer, {

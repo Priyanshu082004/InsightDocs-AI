@@ -1,5 +1,5 @@
-import { auditCleanupQueue } from "../queues/auditCleanup.queue.js";
-import { JOB_NAMES } from "../../constants/queue.constants.js";
+import { auditCleanupQueue } from "../queues/auditCleanUp.queue.js";
+import { JOB_NAMES } from "../../constants/queue.constant.js";
 
 /**
  * Registers a REPEATABLE job (daily at 02:00 server time), not a

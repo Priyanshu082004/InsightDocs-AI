@@ -1,3 +1,4 @@
+// Standard wrapper for consistent API response shapes
 export class ApiResponse {
   constructor(statusCode, data = null, message = "Success") {
     this.statusCode = statusCode;

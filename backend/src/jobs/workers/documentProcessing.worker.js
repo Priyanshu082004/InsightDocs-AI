@@ -11,7 +11,7 @@ import { DOCUMENT_STATUS } from "../../constants/document.constant.js";
 import * as documentProcessingRepository from "../../modules/processing/documentProcessing.repository.js";
 import * as documentRepository from "../../modules/document/document.repository.js";
 import { stageHandlers } from "./stageHandlers.js";
-import { emitProcessingProgress } from "./progressEmitter.js";
+import { emitProcessingProgress } from "../progressEmitter.js";
 import { logger } from "../../config/logger.config.js";
 
 const processDocumentJob = async (job) => {
@@ -93,15 +93,15 @@ documentProcessingWorker.on("failed", async (job, err) => {
   // pending; job.attemptsMade tells us whether this was the last one.
   if (job && job.attemptsMade >= job.opts.attempts) {
     await documentRepository.updateStatus(job.data.documentId, DOCUMENT_STATUS.FAILED);
-    
-      if (document) {
+
+    const document = await documentRepository.findById(job.data.documentId);
+    if (document) {
       await notificationService.createAndPushNotification({
         userId: document.ownerId,
         type: NOTIFICATION_TYPE.DOCUMENT_FAILED,
         message: `"${document.displayName}" failed to process. Please try re-uploading.`,
         relatedDocumentId: document._id,
       });
-    
+    }
   }
-}
 });

@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { env } from "../../../../config/env.config.js";
 import { logger } from "../../../../config/logger.config.js";
 import { ApiError } from "../../../../utils/ApiError.js";
-import { HTTP_STATUS } from "../../../../constants/httpStatus.constants.js";
+import { HTTP_STATUS } from "../../../../constants/httpStatus.constant.js";
 
 //  OpenRouter exposes an OpenAI-compatible chat completions API, so the official `openai` SDK
 //  is reused here rather than a bespoke HTTP client — just pointed at

@@ -3,7 +3,7 @@ import * as auditController from "./audit.controller.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
 import { authorize } from "../../middlewares/rbac.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { asyncHandler } from "../../utils/AsyncHandler.js";
 import { ROLES } from "../../constants/auth.constant.js";
 import { listAuditLogsQuerySchema } from "./audit.validation.js";
 

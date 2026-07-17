@@ -1,4 +1,4 @@
-import { socketEmitter } from "../../sockets/socketEmitter.util.js";
+import { socketEmitter } from "../sockets/socketEmitter.util.js";
 
 /**
  * Replaces the Phase 9 stub (which only logged). Call signature is

@@ -1,5 +1,5 @@
 import { ApiError } from "../utils/ApiError.js";
-import { HTTP_STATUS } from "../constants/httpStatus.constants.js";
+import { HTTP_STATUS } from "../constants/httpStatus.constant.js";
 
 
 //authorize: Express middleware to enforce role-based access control (RBAC).

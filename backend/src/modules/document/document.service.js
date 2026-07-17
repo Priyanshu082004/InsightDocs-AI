@@ -11,9 +11,9 @@ import { emitDocumentShared } from "../../sockets/emitters/documentShared.emitte
 import { emitActivity } from "../../sockets/emitters/activity.emitter.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { HTTP_STATUS } from "../../constants/httpStatus.constant.js";
-import { DOCUMENT_STATUS } from "../../constants/documentStatus.constant.js";
+import { DOCUMENT_STATUS } from "../../constants/document.constant.js";
 import { ACCESS_LEVELS } from "../../constants/auth.constant.js";
-import { AUDIT_ACTION } from "../../constants/auth.constant.js";
+import { AUDIT_ACTION } from "../../constants/system.constant.js";
 
 const sanitizeDocument = (doc) => ({
   id: doc._id,
