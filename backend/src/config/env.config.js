@@ -48,6 +48,9 @@ const envSchema = z.object({
   // Audit
   AUDIT_RETENTION_DAYS: z.coerce.number().int().positive().default(90),
 
+  // Internal AI service (FastAPI) — the ONLY consumer is aiService.client.js
+  AI_SERVICE_URL: z.string().default("http://localhost:8001"),
+
   // Rate limiting
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),

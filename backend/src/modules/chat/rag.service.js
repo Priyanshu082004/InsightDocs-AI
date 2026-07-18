@@ -3,9 +3,7 @@ import * as chatMessageRepository from "./chatMessage.repository.js";
 import * as permissionRepository from "../permission/permission.repository.js";
 import * as permissionService from "../permission/permission.service.js";
 import * as retrievalService from "./retrieval.service.js";
-import { buildRagPrompt } from "./ragPromptBuilder.js";
-import { generateEmbedding } from "../ai/embedding.service.js";
-import { streamChatResponse } from "../ai/llm.service.js";
+import * as aiServiceClient from "../../services/aiService.client.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { HTTP_STATUS } from "../../constants/httpStatus.constant.js";
 import { ACCESS_LEVELS } from "../../constants/auth.constant.js";
@@ -44,15 +42,18 @@ export const askQuestion = async ({ userId, sessionId, question, onToken }) => {
     content: question,
   });
 
-  const queryEmbedding = await generateEmbedding(question);
+  // Embed the question via the AI service (a query is just a
+  // one-element batch), retrieve backend-side (Atlas Vector Search
+  // stays backend-owned), then hand question + chunks to the AI
+  // service, which builds the RAG prompt internally and streams tokens.
+  const { embeddings } = await aiServiceClient.generateEmbeddings([question]);
   const chunks = await retrievalService.retrieveRelevantChunks({
-    queryEmbedding,
+    queryEmbedding: embeddings[0],
     allowedDocumentIds,
     topK: TOP_K_CHUNKS,
   });
 
-  const prompt = buildRagPrompt(question, chunks);
-  const answer = await streamChatResponse(prompt, onToken);
+  const answer = await aiServiceClient.streamChatResponse({ question, chunks }, onToken);
 
   const assistantMessage = await chatMessageRepository.createMessage({
     sessionId,
