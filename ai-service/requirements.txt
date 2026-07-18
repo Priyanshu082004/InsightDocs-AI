@@ -1,0 +1,16 @@
+# --- Web framework ---
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+
+# --- Config / validation ---
+pydantic==2.11.7
+pydantic-settings==2.10.1
+
+# --- LLM provider (OpenRouter via OpenAI-compatible SDK) ---
+openai==1.99.9
+
+# --- Embeddings (local BAAI/bge-m3) ---
+sentence-transformers==5.1.0
+
+# --- Multipart uploads (OCR endpoint) ---
+python-multipart==0.0.20

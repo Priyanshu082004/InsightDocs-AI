@@ -1,0 +1,14 @@
+# Environment / secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Model / tooling caches
+.cache/
+*.egg-info/
+.pytest_cache/
+.env.example
