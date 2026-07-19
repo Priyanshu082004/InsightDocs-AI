@@ -1,5 +1,4 @@
-"""OCR prompt — verbatim port of the hardcoded prompt from the backend's
-former Llm.service.js extractTextFromImage."""
+"""OCR prompt """
 
 OCR_PROMPT = (
     "Extract all readable text from this image. "

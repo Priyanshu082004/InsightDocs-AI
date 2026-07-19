@@ -1,6 +1,4 @@
-"""Summary prompt — verbatim port of buildSummaryPrompt from the backend's
-former modules/ai/prompts/index.js. Kept word-for-word so summaries are
-indistinguishable from pre-migration output."""
+"""Summary prompt """
 
 
 def build_summary_prompt(text: str) -> str:

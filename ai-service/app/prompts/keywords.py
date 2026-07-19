@@ -1,5 +1,4 @@
-"""Keywords prompt — verbatim port of buildKeywordsPrompt from the backend's
-former modules/ai/prompts/index.js."""
+"""Keywords prompt """
 
 
 def build_keywords_prompt(text: str) -> str:

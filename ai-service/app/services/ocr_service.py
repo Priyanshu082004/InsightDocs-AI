@@ -1,9 +1,4 @@
-"""OCR service — extracts text from an image via the vision-capable LLM.
-
-Python counterpart of the backend's former extractTextFromImage. The
-image arrives as raw bytes (multipart upload from the backend, which
-fetched it from MinIO — storage stays backend-owned per Decision 5).
-"""
+"""OCR service — extracts text from an image via the vision-capable LLM."""
 
 from app.core.config import settings
 from app.prompts.ocr import OCR_PROMPT

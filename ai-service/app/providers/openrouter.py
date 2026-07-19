@@ -1,6 +1,4 @@
-"""OpenRouter LLM provider — Python port of the backend's former
-openRouter.provider.js. Same four operations, same behaviors:
-
+"""OpenRouter LLM provider
 - generate_text: single-shot text completion
 - generate_json: text completion + fence-strip + json.loads
 - generate_vision_text: multimodal (base64 data-URI image) for OCR
@@ -42,8 +40,7 @@ async def generate_text(prompt: str) -> str:
 
 
 async def generate_json(prompt: str) -> dict:
-    # Same contract as the Node version: append a strict-JSON instruction,
-    # strip accidental markdown fences, parse.
+
     raw = await generate_text(
         prompt + "\n\nRespond with ONLY valid JSON. No markdown code fences, no commentary, no explanation."
     )

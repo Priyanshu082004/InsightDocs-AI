@@ -1,9 +1,6 @@
 """Local embedding provider — serves BAAI/bge-m3 via sentence-transformers.
 
-Replaces the backend's former openAI.provider.js (which pointed at OpenAI
-and required an API key the project never had). The model matches the
-.env contract exactly: EMBEDDING_MODEL=BAAI/bge-m3, 1024 dimensions —
-the same dimension the Atlas Vector Search index must be built with.
+
 
 The model is loaded lazily on first use and cached for the process
 lifetime (it is ~2GB of weights; loading per-request would be absurd).

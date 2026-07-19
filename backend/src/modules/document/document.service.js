@@ -168,6 +168,10 @@ export const shareDocument = async (granterId, documentId, { email, accessLevel 
   });
 
   const document = await documentRepository.findById(documentId);
+  // req.user only carries { id, role } (JWT payload — no name), so the
+  // granter's display name requires this one indexed read. Fetched
+  // after grantAccess so a failed permission check never pays for it.
+  const granter = await userRepository.findById(granterId);
 
   emitDocumentShared(targetUser._id, {
     documentId,
@@ -175,9 +179,8 @@ export const shareDocument = async (granterId, documentId, { email, accessLevel 
     accessLevel,
     sharedBy: granterId,
   });
-    
 
-   await notificationService.createAndPushNotification({
+  await notificationService.createAndPushNotification({
     userId: targetUser._id,
     type: NOTIFICATION_TYPE.DOCUMENT_SHARED,
     message: `${granter?.name ?? "Someone"} shared "${document?.displayName}" with you (${accessLevel.toLowerCase()} access)`,

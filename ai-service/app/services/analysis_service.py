@@ -1,10 +1,4 @@
-"""Analysis service — orchestrates summary/keywords/risk generation.
-
-Python counterpart of the generation half of the backend's former
-Llm.service.js. Persistence does NOT happen here: the backend keeps
-ownership of MongoDB and writes the results itself (Decision 5).
-Each function: build prompt -> call provider -> validate/shape output.
-"""
+"""Analysis service — orchestrates summary/keywords/risk generation."""
 
 from app.core.config import settings
 from app.prompts.keywords import build_keywords_prompt

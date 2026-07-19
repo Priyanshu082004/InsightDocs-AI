@@ -39,8 +39,11 @@ const processDocumentJob = async (job) => {
     emitProcessingProgress(document.ownerId, documentId, stage, PROCESSING_STATUS.IN_PROGRESS);
 
     try {
-      await stageHandlers[stage]({ document, job });
-      await documentProcessingRepository.markStageCompleted(documentId, stage);
+      // Persist whatever the handler returns as the stage's output —
+      // this is how later stages read earlier stages' results (see
+      // getStageOutput in documentProcessing.repository.js).
+      const output = await stageHandlers[stage]({ document, job });
+      await documentProcessingRepository.markStageCompleted(documentId, stage, output);
       emitProcessingProgress(document.ownerId, documentId, stage, PROCESSING_STATUS.COMPLETED);
     } catch (err) {
       await documentProcessingRepository.markStageFailed(documentId, stage, err.message);
