@@ -20,6 +20,14 @@ const documentChunkSchema = new Schema(
       type: Number,
       required: true,
     },
+    // Provenance: 1-based page this chunk came from. Only PDFs have
+    // reliable page boundaries (verified against pdf-parse at runtime);
+    // null for DOCX/TXT/CSV/OCR text and for chunks created before
+    // this field existed.
+    pageNumber: {
+      type: Number,
+      default: null,
+    },
     // The actual embedding vector lives here (not in EmbeddingMetadata)
     // because Atlas Vector Search builds its index on a field within
     // this collection — the vector must be co-located with the chunk
