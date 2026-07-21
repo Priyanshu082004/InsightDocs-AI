@@ -62,9 +62,15 @@ export const stageHandlers = {
       buffer = await storageService.getObjectBuffer(document.storageKey);
     }
 
-    const text = await extractText({ buffer, mimeType: document.mimeType, ocrText });
+    const { text, pages } = await extractText({
+      buffer,
+      mimeType: document.mimeType,
+      ocrText,
+    });
 
-    return { text, charCount: text.length };
+    // `pages` (PDFs only, null otherwise) rides along in the stage
+    // output so CHUNKING can stamp per-chunk page provenance.
+    return { text, charCount: text.length, pages };
   },
 
   CHUNKING: async ({ document }) => {
@@ -76,7 +82,9 @@ export const stageHandlers = {
 
     await documentChunkRepository.deleteChunksForDocument(document._id);
 
-    const chunks = splitIntoChunks(text);
+    // Old extraction outputs have no `pages` — splitIntoChunks treats
+    // that as "no provenance" and stamps pageNumber null (back-compat).
+    const chunks = splitIntoChunks(text, extractionOutput?.pages ?? null);
     if (chunks.length > 0) {
       await documentChunkRepository.bulkInsertChunks(
         chunks.map((chunk) => ({ documentId: document._id, ...chunk }))

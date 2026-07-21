@@ -16,11 +16,22 @@ import { logger } from "../../config/logger.config.js";
  * modules/processing, not in the AI service.
  */
 
+// Returns { text, pages } — pages is [{ pageNumber, text }], verified
+// at runtime: pdf-parse v2 getText() exposes result.pages[{text,num}].
+// The combined text is rebuilt from the per-page texts (normalized
+// individually, joined with "\n\n") instead of using result.text, which
+// injects "-- N of M --" separator artifacts between pages.
 const extractPdf = async (buffer) => {
   const parser = new PDFParse({ data: new Uint8Array(buffer) });
   try {
     const result = await parser.getText();
-    return result.text ?? "";
+    const pages = (result.pages ?? [])
+      .map((page) => ({ pageNumber: page.num, text: normalize(page.text ?? "") }))
+      .filter((page) => page.text.length > 0);
+    return {
+      text: pages.map((page) => page.text).join("\n\n"),
+      pages,
+    };
   } finally {
     await parser.destroy();
   }
@@ -41,23 +52,30 @@ const normalize = (text) =>
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
+/**
+ * Returns { text, pages }.
+ * `pages` is provenance: [{ pageNumber, text }] — only for PDFs, the
+ * one format with reliable page boundaries (runtime-verified). All
+ * other formats return pages: null; chunks from them carry no page.
+ */
 export const extractText = async ({ buffer, mimeType, ocrText }) => {
   // Image path: OCR stage already did the work via the AI service.
   if (getMimeCategory(mimeType) === "IMAGES") {
-    return normalize(ocrText ?? "");
+    return { text: normalize(ocrText ?? ""), pages: null };
   }
 
   try {
     switch (mimeType) {
       case "application/pdf":
-        return normalize(await extractPdf(buffer));
+        // extractPdf normalizes per page and reports page provenance.
+        return await extractPdf(buffer);
 
       case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        return normalize(await extractDocx(buffer));
+        return { text: normalize(await extractDocx(buffer)), pages: null };
 
       case "text/plain":
       case "text/csv":
-        return normalize(buffer.toString("utf-8"));
+        return { text: normalize(buffer.toString("utf-8")), pages: null };
 
       default:
         // In the upload whitelist but with no parser wired yet

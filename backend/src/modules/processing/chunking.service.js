@@ -43,24 +43,42 @@ const splitOversized = (paragraph) => {
   return pieces;
 };
 
-/**
- * Returns [{ chunkIndex, text, tokenCount }] — exactly the shape
- * CHUNKING's bulkInsertChunks spreads into DocumentChunk rows (the
- * caller adds documentId).
- */
-export const splitIntoChunks = (text) => {
-  const trimmed = (text ?? "").trim();
-  if (!trimmed) return [];
-
-  // Build the packing units: paragraphs, with oversized ones pre-split.
-  const units = trimmed
+// Paragraph units from one span of text, each tagged with its page (or
+// null when the source format has no page provenance).
+const buildUnits = (text, pageNumber) =>
+  text
     .split(/\n{2,}/)
     .map((p) => p.trim())
     .filter(Boolean)
-    .flatMap((p) => (p.length > TARGET_CHARS ? splitOversized(p) : [p]));
+    .flatMap((p) => (p.length > TARGET_CHARS ? splitOversized(p) : [p]))
+    .map((unitText) => ({ text: unitText, pageNumber }));
+
+/**
+ * Returns [{ chunkIndex, text, tokenCount, pageNumber }] — exactly the
+ * shape CHUNKING's bulkInsertChunks spreads into DocumentChunk rows
+ * (the caller adds documentId).
+ *
+ * `pages` is optional provenance from extraction ([{ pageNumber, text }],
+ * PDFs only). When present, units are built per page so each chunk can
+ * record the page its fresh content starts on; the extraction layer
+ * guarantees joining page texts with "\n\n" reproduces `text`, so both
+ * paths chunk the identical corpus. When absent, pageNumber is null —
+ * same behavior as before this field existed (backward compatible).
+ */
+export const splitIntoChunks = (text, pages = null) => {
+  const trimmed = (text ?? "").trim();
+  if (!trimmed) return [];
+
+  const units =
+    pages && pages.length > 0
+      ? pages.flatMap((page) => buildUnits(page.text, page.pageNumber))
+      : buildUnits(trimmed, null);
 
   const chunks = [];
   let current = "";
+  // Page where the current chunk's own (non-overlap) content begins.
+  let currentPage = null;
+  let pageAssigned = false;
 
   const push = () => {
     const chunkText = current.trim();
@@ -69,17 +87,25 @@ export const splitIntoChunks = (text) => {
       chunkIndex: chunks.length,
       text: chunkText,
       tokenCount: estimateTokens(chunkText),
+      pageNumber: currentPage,
     });
   };
 
   for (const unit of units) {
-    if (current && current.length + unit.length > TARGET_CHARS) {
+    if (current && current.length + unit.text.length > TARGET_CHARS) {
       push();
       // Seed the next chunk with the tail of this one for overlap —
-      // facts near the boundary stay retrievable from both sides.
+      // facts near the boundary stay retrievable from both sides. The
+      // overlap belongs to the PREVIOUS page context, so the next
+      // chunk's page comes from its first fresh unit instead.
       current = current.slice(-OVERLAP_CHARS);
+      pageAssigned = false;
     }
-    current = current ? `${current}\n\n${unit}` : unit;
+    if (!pageAssigned) {
+      currentPage = unit.pageNumber;
+      pageAssigned = true;
+    }
+    current = current ? `${current}\n\n${unit.text}` : unit.text;
   }
   push();
 
