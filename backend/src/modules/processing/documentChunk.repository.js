@@ -55,6 +55,7 @@ export const vectorSearchChunks = async ({ queryEmbedding, allowedDocumentIds, t
         documentId: 1,
         chunkIndex: 1,
         text: 1,
+        pageNumber: 1,
         score: { $meta: "vectorSearchScore" },
       },
     },

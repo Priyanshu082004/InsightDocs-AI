@@ -18,6 +18,8 @@ const sanitizeMessage = (message) => ({
   role: message.role,
   content: message.content,
   citedChunkIds: message.citedChunkIds,
+  // Pre-citations messages have no sources field — normalize to [].
+  sources: message.sources ?? [],
   createdAt: message.createdAt,
 });
 

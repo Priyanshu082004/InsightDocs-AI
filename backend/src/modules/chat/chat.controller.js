@@ -47,6 +47,8 @@ export const askQuestion = async (req, res) => {
         done: true,
         messageId: message._id,
         citedChunkIds: message.citedChunkIds,
+        // In retrieval order: sources[0] is the answer's [Source 1].
+        sources: message.sources,
       })}\n\n`
     );
   } catch (err) {

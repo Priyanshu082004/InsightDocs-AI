@@ -23,6 +23,26 @@ const chatMessageSchema = new Schema(
       ref: "DocumentChunk",
       default: [],
     },
+    // Source attribution for ASSISTANT messages, in retrieval order —
+    // sources[0] is what the answer cites as [Source 1]. documentName is
+    // a SNAPSHOT taken at answer time, so history keeps showing the name
+    // the user saw even if the document is renamed or deleted later.
+    // chunkId/documentId/pageNumber are the hooks for future navigation
+    // (open document, jump to page, highlight snippet). Messages created
+    // before this field default to [] (backward compatible).
+    sources: {
+      type: [
+        {
+          _id: false,
+          chunkId: { type: Schema.Types.ObjectId, ref: "DocumentChunk" },
+          documentId: { type: Schema.Types.ObjectId, ref: "Document" },
+          documentName: { type: String, default: null },
+          pageNumber: { type: Number, default: null },
+          snippet: { type: String, default: null },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );

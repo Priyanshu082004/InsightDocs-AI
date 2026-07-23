@@ -20,6 +20,17 @@ export const softDelete = async (documentId) => {
   return Document.findByIdAndUpdate(documentId, { isDeleted: true }, { new: true });
 };
 
+// Display names for a set of ids in ONE query — used by the RAG read
+// path to label sources without a $lookup inside the vector-search
+// aggregation. Deliberately no isDeleted filter: retrieval already
+// permission-scoped the ids, and a chunk cited from a just-deleted
+// document should still show its name rather than "unknown".
+export const findNamesByIds = async (documentIds) => {
+  return Document.find({ _id: { $in: documentIds } })
+    .select("displayName")
+    .lean();
+};
+
 
 //   documentIds comes from permission.repository.listDocumentIdsForUser —
 //  this function only ever operates on that pre-filtered set, never on

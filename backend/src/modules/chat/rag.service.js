@@ -3,12 +3,37 @@ import * as chatMessageRepository from "./chatMessage.repository.js";
 import * as permissionRepository from "../permission/permission.repository.js";
 import * as permissionService from "../permission/permission.service.js";
 import * as retrievalService from "./retrieval.service.js";
+import * as documentRepository from "../document/document.repository.js";
 import * as aiServiceClient from "../../services/aiService.client.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { HTTP_STATUS } from "../../constants/httpStatus.constant.js";
 import { ACCESS_LEVELS } from "../../constants/auth.constant.js";
 
 const TOP_K_CHUNKS = 5;
+const SNIPPET_MAX_CHARS = 300;
+
+/**
+ * Builds sources[] from retrieved chunks, in retrieval order — index i
+ * is what the answer cites as [Source i+1] (the AI service numbers the
+ * prompt's excerpts in the same order). documentName is resolved in ONE
+ * batched query and snapshotted onto the message so history survives
+ * later renames/deletes. pageNumber is null for non-PDF sources.
+ */
+const buildSources = async (chunks) => {
+  if (chunks.length === 0) return [];
+
+  const uniqueDocumentIds = [...new Set(chunks.map((c) => c.documentId.toString()))];
+  const documents = await documentRepository.findNamesByIds(uniqueDocumentIds);
+  const nameById = new Map(documents.map((d) => [d._id.toString(), d.displayName]));
+
+  return chunks.map((chunk) => ({
+    chunkId: chunk._id,
+    documentId: chunk.documentId,
+    documentName: nameById.get(chunk.documentId.toString()) ?? null,
+    pageNumber: chunk.pageNumber ?? null,
+    snippet: chunk.text.slice(0, SNIPPET_MAX_CHARS),
+  }));
+};
 
 /**
  * Resolves which documents this question is allowed to retrieve from.
@@ -55,11 +80,14 @@ export const askQuestion = async ({ userId, sessionId, question, onToken }) => {
 
   const answer = await aiServiceClient.streamChatResponse({ question, chunks }, onToken);
 
+  const sources = await buildSources(chunks);
+
   const assistantMessage = await chatMessageRepository.createMessage({
     sessionId,
     role: "ASSISTANT",
     content: answer,
     citedChunkIds: chunks.map((c) => c._id),
+    sources,
   });
 
   return assistantMessage;
