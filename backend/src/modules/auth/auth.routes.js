@@ -8,7 +8,7 @@ import { registerSchema, loginSchema } from "./auth.validation.js";
 
 const router = Router();
 
-const loginLimiter = strictRateLimiter({ max: 5, keyPrefix: "login" });
+const loginLimiter = strictRateLimiter({ max:20,keyPrefix: "login" });
 const registerLimiter = strictRateLimiter({ max: 5, keyPrefix: "register" });
 
 router.post(
