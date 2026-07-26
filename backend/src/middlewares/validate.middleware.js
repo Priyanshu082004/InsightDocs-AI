@@ -22,9 +22,12 @@ export const validate = (schema, source = "body") => {
       );
     }
 
-    // Replace with the parsed (and transformed — trimmed/lowercased/etc.)
-    // data, so downstream code never sees raw unvalidated input.
-    req[source] = result.data;
+     if (source === "query") {
+      Object.assign(req.query, result.data);
+    } else {
+      req[source] = result.data;
+    }
+
     next();
   };
 };
