@@ -61,6 +61,9 @@ export const uploadDocument = async (ownerId, file) => {
     accessLevel: ACCESS_LEVELS.OWNER,
     grantedBy: ownerId,
   });
+ 
+   
+
 
   await auditService.logAction({
     userId: ownerId,
@@ -69,6 +72,8 @@ export const uploadDocument = async (ownerId, file) => {
     resourceId: document._id,
     metadata: { originalName: file.originalname, sizeBytes: file.size },
   });
+    
+  
 
 
   await enqueueDocumentProcessing(document._id);

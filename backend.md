@@ -685,3 +685,461 @@ Administrators can:
 - Deactivate accounts.
 
 These operations are restricted to users with the ADMIN role.
+
+
+
+
+
+# Document Module
+
+## Overview
+
+The Document module is responsible for managing the complete lifecycle of documents in the application. It handles uploading files, storing document metadata, managing permissions, generating secure download links, sharing documents, listing collaborators, and deleting documents. Unlike the User module, a document exists in multiple systems simultaneously—MongoDB stores its metadata while MinIO stores the actual file.
+
+---
+
+## Architecture
+
+```
+                   Client
+                      │
+                      ▼
+             HTTP Request
+                      │
+                      ▼
+             Document Routes
+                      │
+      ┌───────────────┼────────────────┐
+      │               │                │
+Authenticate     Validation      Upload Middleware
+      │                                │
+      ▼                                ▼
+            document.controller.js
+                      │
+                      ▼
+             document.service.js
+                      │
+      ┌───────────────┼─────────────────────────────────────┐
+      │               │                │          │         │
+      ▼               ▼                ▼          ▼         ▼
+ MongoDB          MinIO Storage   Permission   Audit    Notification
+                                    Module     Module     Module
+      │
+      ▼
+ Queue (Background Processing)
+      │
+      ▼
+ WebSocket Events
+```
+
+The controller acts only as a bridge between the HTTP layer and the service layer. All business logic resides inside the service.
+
+---
+
+# Layer Responsibilities
+
+## Routes
+
+The route defines:
+
+- Authentication requirements
+- Permission requirements
+- Validation middleware
+- Upload middleware
+- Controller to execute
+
+Example:
+
+```
+POST /documents
+        │
+authenticate
+        │
+uploadSingleFile
+        │
+controller.upload
+```
+
+---
+
+## Controller
+
+The controller is intentionally thin.
+
+Its responsibility is only to:
+
+- Receive request data
+- Call the appropriate service
+- Return a standardized API response
+
+It does **not**:
+
+- Upload files
+- Access MongoDB
+- Generate storage keys
+- Manage permissions
+- Write audit logs
+
+Those responsibilities belong to the service layer.
+
+---
+
+## Service
+
+The service contains all business logic.
+
+It is responsible for:
+
+- Uploading files to MinIO
+- Creating MongoDB records
+- Creating owner permissions
+- Generating presigned download URLs
+- Sharing documents
+- Writing audit logs
+- Sending notifications
+- Triggering background jobs
+- Emitting WebSocket events
+
+---
+
+# Document Upload Flow
+
+Uploading a document involves several systems working together.
+
+```
+Client uploads file
+        │
+        ▼
+Multer validates file
+        │
+        ▼
+File stored temporarily in memory
+        │
+        ▼
+Generate unique storage key
+        │
+        ▼
+Upload file to MinIO
+        │
+        ▼
+Create document metadata in MongoDB
+        │
+        ▼
+Create OWNER permission
+        │
+        ▼
+Create audit log
+        │
+        ▼
+Enqueue background processing job
+        │
+        ▼
+Emit WebSocket activity
+        │
+        ▼
+Return response to client
+```
+
+---
+
+# Why MinIO?
+
+The application does **not** store uploaded files inside MongoDB.
+
+Instead:
+
+- MinIO stores the actual file.
+- MongoDB stores only metadata.
+
+For example:
+
+### Stored in MinIO
+
+- PDF
+- DOCX
+- PNG
+- CSV
+
+### Stored in MongoDB
+
+- Owner
+- Original filename
+- Display name
+- MIME type
+- File size
+- Storage key
+- Status
+- Version
+- Tags
+- Created date
+- Updated date
+
+This keeps the database lightweight while allowing efficient file storage.
+
+---
+
+# Why Multer Memory Storage?
+
+The upload middleware uses:
+
+```javascript
+multer.memoryStorage()
+```
+
+Flow:
+
+```
+Client
+   │
+   ▼
+RAM Buffer
+   │
+   ▼
+MinIO
+```
+
+The uploaded file is never written to the server's local filesystem.
+
+Advantages:
+
+- Faster uploads
+- No temporary files
+- No cleanup required
+- Ideal for object storage systems like MinIO
+
+---
+
+# Storage Key
+
+The filename uploaded by the user is **not** used directly as the storage path.
+
+Example:
+
+User uploads:
+
+```
+invoice.pdf
+```
+
+Internally MinIO may store:
+
+```
+documents/42/9af73e0d.pdf
+```
+
+The generated storage key:
+
+- is unique
+- prevents filename collisions
+- is never exposed to clients
+
+Clients only receive:
+
+- originalName
+- displayName
+
+---
+
+# Document Metadata
+
+Every uploaded document has metadata stored in MongoDB.
+
+Metadata includes:
+
+- Owner ID
+- Original filename
+- Display name
+- MIME type
+- File size
+- Document status
+- Version
+- Tags
+- Timestamps
+
+The actual file contents remain inside MinIO.
+
+---
+
+# Document Status
+
+Immediately after upload the document status is:
+
+```
+PROCESSING
+```
+
+It is **not** immediately marked as READY.
+
+Reason:
+
+After upload, a background worker may perform additional operations such as:
+
+- Text extraction
+- Thumbnail generation
+- Virus scanning
+- AI processing
+- Indexing
+- Metadata extraction
+
+Only after processing finishes should the status become READY.
+
+---
+
+# Permission Model
+
+Every uploaded document automatically receives an OWNER permission.
+
+```
+Owner
+   │
+   ▼
+Permission Collection
+```
+
+The owner can later share the document with other users.
+
+Allowed access levels:
+
+- OWNER
+- EDITOR
+- VIEWER
+
+However, only one OWNER exists.
+
+The Share API allows granting only:
+
+- EDITOR
+- VIEWER
+
+OWNER permissions cannot be granted through the API.
+
+---
+
+# Why a Separate Permission Collection?
+
+Instead of storing collaborators inside the document itself, permissions are stored in a separate collection.
+
+Advantages:
+
+- Supports many collaborators
+- Easier permission management
+- Better scalability
+- Faster permission queries
+- Cleaner document schema
+
+---
+
+# Secure Downloads
+
+The server does not directly send file contents.
+
+Instead:
+
+```
+Client
+   │
+GET /documents/:id/download
+   │
+   ▼
+Generate Presigned URL
+   │
+   ▼
+Return URL
+   │
+   ▼
+Client downloads directly from MinIO
+```
+
+Benefits:
+
+- Lower server load
+- Better scalability
+- Temporary access only
+- Improved security
+
+---
+
+# Soft Delete
+
+Deleting a document does not immediately remove it permanently.
+
+Instead, the service performs a soft delete.
+
+Benefits:
+
+- Recovery is possible
+- Audit history is preserved
+- Background cleanup jobs can remove files later
+- Prevents accidental permanent deletion
+
+---
+
+# Audit Logging
+
+Every important document action creates an audit record.
+
+Examples:
+
+- Upload
+- Rename
+- Download
+- Delete
+
+Audit logs help with:
+
+- Security investigations
+- Compliance
+- User activity tracking
+- Debugging
+
+---
+
+# Notifications
+
+When a document is shared, the recipient receives a notification.
+
+Flow:
+
+```
+Owner
+   │
+Share Document
+   │
+   ▼
+Notification Module
+   │
+   ▼
+Recipient
+```
+
+---
+
+# WebSocket Events
+
+Some document actions also generate real-time events.
+
+Examples:
+
+- Document uploaded
+- Document shared
+
+These events allow connected clients to update their UI instantly without refreshing the page.
+
+---
+
+# Responsibilities of the Document Module
+
+The Document module is responsible for:
+
+- Uploading documents
+- Storing files in MinIO
+- Managing document metadata
+- Managing permissions
+- Generating secure download links
+- Sharing documents
+- Listing collaborators
+- Soft deleting documents
+- Writing audit logs
+- Sending notifications
+- Triggering background processing jobs
+- Emitting real-time WebSocket events
