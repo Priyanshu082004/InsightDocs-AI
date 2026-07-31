@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* ---------------------------------------------------------------------- */
+/* Design tokens                                                          */
+/* Colors and fonts are centralized here so components never hardcode     */
+/* one-off values. Values are matched against the approved landing page   */
+/* design (final_landing_page.png).                                      */
+/* ---------------------------------------------------------------------- */
+@theme {
+  --font-display: "Lora", "Georgia", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eefbf3;
+  --color-brand-100: #d6f3e0;
+  --color-brand-500: #1f9d55;
+  --color-brand-600: #16803c;
+  --color-brand-700: #106630;
+
+  --color-cream-50: #fbfaf7;
+  --color-cream-100: #f6f4ee;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream-50);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ---------------------------------------------------- */
+/* Hero floating badges                                 */
+/* ---------------------------------------------------- */
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.hero-float {
+  animation: hero-float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.hero-float:nth-child(2n) {
+  animation-duration: 7s;
+}
+
+.hero-float:nth-child(3n) {
+  animation-duration: 5.5s;
+}
+
+.hero-float:nth-child(4n) {
+  animation-duration: 6.8s;
+}
+
+.hero-float:nth-child(5n) {
+  animation-delay: -2s;
+}
+
+.hero-float:nth-child(6n) {
+  animation-delay: -4s;
+}
+
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,46 @@
+import {
+  Search,
+  FileText,
+  MessageSquare,
+  ScanLine,
+  UploadCloud,
+  ShieldAlert,
+  FileStack,
+  FileType,
+  Lightbulb,
+  Lock,
+  Table,
+  MessageCircleQuestion,
+  Zap,
+  Share2,
+  BookOpen,
+  ShieldCheck,
+  Layers,
+  Tag,
+  FileSpreadsheet,
+} from "lucide-react";
+
+// Positions are literal Tailwind arbitrary-value classes (percentages of the
+// hero container) so they match the reference design's scattered layout
+// while still being written as plain utility classes, not inline styles.
+export const HERO_BADGES = [
+  { label: "Smart Search", icon: Search, color: "green", position: "top-[23%] left-[21%]" },
+  { label: "PDF Documents", icon: FileText, color: "orange", position: "top-[19%] left-[44%]" },
+  { label: "AI Chat", icon: MessageSquare, color: "purple", position: "top-[18%] left-[61%]" },
+  { label: "Text Extraction (OCR)", icon: ScanLine, color: "green", position: "top-[28%] left-[75%]" },
+  { label: "Upload & Process", icon: UploadCloud, color: "blue", position: "top-[34%] left-[11%]" },
+  { label: "Risk Analysis", icon: ShieldAlert, color: "purple", position: "top-[35%] left-[89%]" },
+  { label: "Summarization", icon: FileStack, color: "orange", position: "top-[45%] left-[11%]" },
+  { label: "Word Documents", icon: FileType, color: "blue", position: "top-[45%] left-[75%]" },
+  { label: "Key Insights", icon: Lightbulb, color: "green", position: "top-[54%] left-[24%]" },
+  { label: "Secure & Private", icon: Lock, color: "green", position: "top-[51%] left-[89%]" },
+  { label: "Excel Files", icon: Table, color: "green", position: "top-[63%] left-[11%]" },
+  { label: "Question Answering", icon: MessageCircleQuestion, color: "orange", position: "top-[61%] left-[78%]" },
+  { label: "Real-time Processing", icon: Zap, color: "purple", position: "top-[75%] left-[12%]" },
+  { label: "Vector Search", icon: Share2, color: "blue", position: "top-[69%] left-[90%]" },
+  { label: "Knowledge Extraction", icon: BookOpen, color: "purple", position: "top-[82%] left-[29%]" },
+  { label: "Data Security", icon: ShieldCheck, color: "green", position: "top-[79%] left-[80%]" },
+  { label: "Embeddings", icon: Layers, color: "green", position: "top-[90%] left-[37%]" },
+  { label: "Automatic Tagging", icon: Tag, color: "orange", position: "top-[89%] left-[66%]" },
+  { label: "CSV Files", icon: FileSpreadsheet, color: "orange", position: "top-[89%] left-[87%]" },
+];
