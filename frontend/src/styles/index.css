@@ -13,6 +13,7 @@
 
   --color-brand-50: #eefbf3;
   --color-brand-100: #d6f3e0;
+  --color-brand-400: #4cb87a;
   --color-brand-500: #1f9d55;
   --color-brand-600: #16803c;
   --color-brand-700: #106630;
@@ -34,46 +35,20 @@ body {
   font-family: var(--font-display);
 }
 
-/* ---------------------------------------------------- */
-/* Hero floating badges                                 */
-/* ---------------------------------------------------- */
-
-@keyframes hero-float {
+/* Gentle vertical bob used by the Hero's floating feature badges. */
+@keyframes float {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
-
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
 }
 
-.hero-float {
-  animation: hero-float 6s ease-in-out infinite;
-  will-change: transform;
+.animate-float {
+  animation: float 4.5s ease-in-out infinite;
 }
-
-.hero-float:nth-child(2n) {
-  animation-duration: 7s;
-}
-
-.hero-float:nth-child(3n) {
-  animation-duration: 5.5s;
-}
-
-.hero-float:nth-child(4n) {
-  animation-duration: 6.8s;
-}
-
-.hero-float:nth-child(5n) {
-  animation-delay: -2s;
-}
-
-.hero-float:nth-child(6n) {
-  animation-delay: -4s;
-}
-
 
 /* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {

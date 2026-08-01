@@ -6,7 +6,7 @@ import { HERO_BADGES } from "./heroBadgesData";
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden px-6 pb-16 pt-16 lg:pt-20">
+    <section className="relative overflow-hidden px-6 pb-6 pt-1 lg:pt-1">
       {/*
         This box is locked to the reference design's canvas proportions
         (roughly 849 x 615) so every badge's top/left percentage resolves
