@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import Logo from "../common/Logo";
-import Button from "../common/Button";
+import AppLogo from "../common/AppLogo";
+import PrimaryButton from "../common/PrimaryButton";
+import SecondaryButton from "../common/SecondaryButton";
 import useScrolled from "../../hooks/useScrolled";
 
 const NAV_LINKS = [
@@ -30,7 +31,7 @@ function Navbar() {
         className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10"
       >
         <Link to="/" aria-label="InsightDocs AI home">
-          <Logo />
+          <AppLogo  />
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">
@@ -48,12 +49,12 @@ function Navbar() {
         </ul>
 
         <div className="flex items-center gap-3">
-          <Button as={Link} to="/login" variant="ghost" size="sm">
+          <SecondaryButton as={Link} to="/login" variant="ghost" size="sm">
             Log in
-          </Button>
-          <Button as={Link} to="/signup" variant="primary" size="sm">
+          </SecondaryButton>
+          <PrimaryButton as={Link} to="/signup" variant="primary" size="sm">
             Get Started
-          </Button>
+          </PrimaryButton>
         </div>
       </nav>
     </header>

@@ -1,6 +1,6 @@
 import { FaGithub, FaLinkedin, FaXTwitter } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import Logo from "../common/Logo";
+import AppLogo from "../common/AppLogo";
 
 const SOCIAL_LINKS = [
   {
@@ -21,7 +21,7 @@ function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 text-center md:flex-row md:items-center md:justify-between md:text-left">
         <div className="flex flex-col items-center gap-3 md:flex-row md:items-center md:gap-6">
           <Link to="/" aria-label="InsightDocs AI home">
-            <Logo />
+            <AppLogo />
           </Link>
           <span className="hidden h-8 w-px bg-gray-200 md:block" aria-hidden="true" />
           <p className="text-sm leading-relaxed text-gray-500">
