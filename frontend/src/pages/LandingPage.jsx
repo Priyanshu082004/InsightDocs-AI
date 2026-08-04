@@ -6,6 +6,7 @@ import SecurityPrivacy from "../components/landing/SecurityPrivacy";
 import SectionConnectorArrow from "../components/landing/SectionConnectorArrow";
 import PageBackground from "../components/common/PageBackground";
 import FAQ from "../components/landing/FAQ";
+import Footer from "../components/landing/Footer";
 
 
 
@@ -47,6 +48,7 @@ function LandingPage() {
 
 
         </main>
+        <Footer />
       </div>
     </div>
   );
