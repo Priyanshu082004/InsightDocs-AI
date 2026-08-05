@@ -1,4 +1,4 @@
-import { APP_BACKGROUND_ICONS } from "./appBackgroundIconsData";
+import { APP_BACKGROUND_ICONS } from "./appBackgroundIconData";
 
 /**
  * The global background for the entire application. Rendered once at the
@@ -16,7 +16,7 @@ function AppBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-cream-50"
+     className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-cream-50"
     >
       {/* Subtle pastel gradient blobs */}
       <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-100/40 blur-3xl" />
@@ -27,12 +27,14 @@ function AppBackground() {
       {APP_BACKGROUND_ICONS.map(({ icon: Icon, position }, index) => (
         <Icon
           key={index}
-          className={`absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-gray-300/50 ${position}`}
+          className={`absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-gray-400/60 ${position}`}
           strokeWidth={1.5}
         />
       ))}
     </div>
   );
 }
+
+
 
 export default AppBackground;

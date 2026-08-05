@@ -2,8 +2,9 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
-const LoginPage = lazy(() => import("../pages/LoginPage"));
-const SignupPage = lazy(() => import("../pages/SignupPage"));
+const SignupPage = lazy(() => import("../pages/Signup/SignupPage"));
+const LoginPage = lazy(() => import("../pages/Login/LoginPage"));
+const ForgotPasswordPage = lazy(() => import("../pages/ForgotPassword/ForgotPasswordPage"));
 
 function RouteFallback() {
   return (
@@ -20,10 +21,11 @@ function AppRouter() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
 
-          {/* Placeholder routes only. Full authentication UI, forms, and
-              logic will be implemented later. */}
+         
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

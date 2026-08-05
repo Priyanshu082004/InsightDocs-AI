@@ -4,7 +4,6 @@ import Hero from "../components/landing/Hero";
 import HowItWorks from "../components/landing/HowItWorks";
 import SecurityPrivacy from "../components/landing/SecurityPrivacy";
 import SectionConnectorArrow from "../components/landing/SectionConnectorArrow";
-import PageBackground from "../components/common/PageBackground";
 import FAQ from "../components/landing/FAQ";
 import Footer from "../components/landing/Footer";
 
@@ -18,11 +17,10 @@ function LandingPage() {
   const mainRef = useRef(null);
 
   return (
-    <div className="min-h-screen bg-cream-50">
+    <div className="min-h-screen">
       {/* Shared relative wrapper so the watermark texture spans behind
           both the Navbar and Hero as one continuous background. */}
       <div className="relative">
-        <PageBackground />
         <Navbar />
         <main ref={mainRef} className="relative">
           <Hero />
